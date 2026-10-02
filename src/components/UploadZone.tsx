@@ -75,6 +75,8 @@ const UploadZone = () => {
   const [pushedIndexes, setPushedIndexes] = useState<Set<number>>(new Set());
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [activeChatFilename, setActiveChatFilename] = useState<string | null>(null);
+  const [isPushing, setIsPushing] = useState(false);
+  const [notionSyncTarget, setNotionSyncTarget] = useState<string>("all");
   const reportRef = useRef<HTMLDivElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -145,30 +147,57 @@ const UploadZone = () => {
     }, 500);
   };
 
-  const pushToNotion = async (res: any, index: number) => {
-    try {
-      const payload = {
-        ...res,
-        reporter: reporter,
-        report_date: reportDate,
-        database_id: channel
-      };
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const response = await fetch(`${apiUrl}/api/papers/push_to_notion`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const data = await response.json();
-      if (data.status === "success") {
-        alert("🎉 成功同步至 Notion！");
-        setPushedIndexes(prev => new Set(prev).add(index));
-      } else {
-        alert("同步失败: " + JSON.stringify(data));
+  const handlePushTarget = async () => {
+    if (isPushing) return;
+    setIsPushing(true);
+    
+    let targetsToPush = [];
+    if (notionSyncTarget === "all") {
+      targetsToPush = results.map((res, index) => ({res, index})).filter(x => !pushedIndexes.has(x.index));
+    } else {
+      const idx = parseInt(notionSyncTarget);
+      if (!pushedIndexes.has(idx)) {
+        targetsToPush = [{ res: results[idx], index: idx }];
       }
-    } catch (e) {
-      alert("网络错误: " + String(e));
     }
+
+    if (targetsToPush.length === 0) {
+      alert("没有需要同步的文献！(可能已全部同步)");
+      setIsPushing(false);
+      return;
+    }
+
+    let successCount = 0;
+    for (const target of targetsToPush) {
+      try {
+        const payload = {
+          ...target.res,
+          reporter: reporter,
+          report_date: reportDate,
+          database_id: channel
+        };
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        const response = await fetch(`${apiUrl}/api/papers/push_to_notion`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (data.status === "success") {
+          setPushedIndexes(prev => new Set(prev).add(target.index));
+          successCount++;
+        } else {
+          alert(`同步 ${target.res._filename} 失败: ` + JSON.stringify(data));
+        }
+      } catch (e) {
+        alert(`网络错误同步 ${target.res._filename}: ` + String(e));
+      }
+    }
+    
+    if (successCount > 0) {
+      alert(`🎉 成功同步 ${successCount} 篇文献至 Notion！`);
+    }
+    setIsPushing(false);
   };
 
   useEffect(() => {
@@ -345,6 +374,35 @@ const UploadZone = () => {
 
       {/* 第二屏：解析结果 */}
       <div ref={reportRef} style={{ display: 'flex', flexDirection: 'column', gap: '80px', marginTop: '40px' }}>
+        
+        {/* 全局 Notion 黏性操作条 */}
+        {results.length > 0 && (
+          <div style={{ position: 'sticky', top: '16px', zIndex: 100, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', padding: '16px 24px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.1)', display: 'flex', gap: '16px', alignItems: 'center', border: '1px solid var(--border-color)', margin: '0 0 -40px 0' }}>
+            <span style={{ fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>📤 同步至 Notion:</span>
+            <select 
+              className="input-field" 
+              style={{ margin: 0, flex: 1, padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', background: 'rgba(255,255,255,0.9)' }} 
+              value={notionSyncTarget} 
+              onChange={(e) => setNotionSyncTarget(e.target.value)}
+              disabled={isPushing}
+            >
+              <option value="all">🚀 一键同步所有文献 ({results.length - pushedIndexes.size} 篇未同步)</option>
+              {results.map((res, index) => (
+                <option key={index} value={index} disabled={pushedIndexes.has(index)}>
+                  📄 {res.Title_ZH || res._filename} {pushedIndexes.has(index) ? ' (✅ 已同步)' : ''}
+                </option>
+              ))}
+            </select>
+            <button 
+              className="btn btn-primary" 
+              disabled={isPushing || (results.length - pushedIndexes.size === 0 && notionSyncTarget === 'all') || (notionSyncTarget !== 'all' && pushedIndexes.has(parseInt(notionSyncTarget)))} 
+              onClick={handlePushTarget}
+              style={{ padding: '10px 24px', borderRadius: '8px', whiteSpace: 'nowrap', fontWeight: 600, opacity: isPushing ? 0.7 : 1, cursor: isPushing ? 'wait' : 'pointer' }}
+            >
+              {isPushing ? "⏳ 正在同步中..." : "确认上传"}
+            </button>
+          </div>
+        )}
         {results.map((res, index) => {
           const isPushed = pushedIndexes.has(index);
           return (
@@ -356,14 +414,6 @@ const UploadZone = () => {
                 </div>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontFamily: 'monospace', marginBottom: '32px' }}>{res.Journal || '未知期刊'} | IF: {res.IF || '未知'} | {res.PubDate || '未知'} | 汇报人: {reporter}</p>
-              
-              <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
-                <button className="btn btn-primary" style={{ flex: 1, padding: '16px', fontWeight: 600, opacity: isPushed ? 0.6 : 1, cursor: isPushed ? 'not-allowed' : 'pointer' }} 
-                  onClick={() => !isPushed && pushToNotion(res, index)} 
-                  disabled={isPushed}>
-                  {isPushed ? "✅ 已成功同步至 Notion" : "📤 确认无误，同步至 Notion"}
-                </button>
-              </div>
 
               <div className="glass-panel" style={{ padding: '32px', marginBottom: '24px' }}>
                 <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>核心总结</h3>
