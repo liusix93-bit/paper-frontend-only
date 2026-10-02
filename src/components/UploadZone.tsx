@@ -443,12 +443,20 @@ const UploadZone = () => {
                 <p style={{ lineHeight: 1.8, whiteSpace: 'pre-wrap', marginTop: '12px' }}><strong>启示：</strong><br/>{res.Sec05_Ideas}</p>
               </div>
 
-              {/* Chat with Paper Trigger */}
-              <div style={{ padding: '0 0 24px 0' }}>
+              {/* Chat with Paper Trigger (Sticky) */}
+              <div style={{ position: 'sticky', bottom: '24px', display: 'flex', justifyContent: 'flex-end', zIndex: 10, pointerEvents: 'none', marginTop: '-20px', marginBottom: '24px' }}>
                 <button 
                   className="btn btn-primary" 
                   onClick={() => setActiveChatFilename(res._filename)}
-                  style={{ padding: '12px 24px', borderRadius: '30px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', boxShadow: '0 4px 15px rgba(123, 115, 212, 0.3)' }}
+                  style={{ pointerEvents: 'auto', padding: '12px 24px', borderRadius: '30px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', boxShadow: '0 8px 20px rgba(123, 115, 212, 0.4)', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 10px 25px rgba(123, 115, 212, 0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'none';
+                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(123, 115, 212, 0.4)';
+                  }}
                 >
                   💬 AI 深度追问这篇文献
                 </button>
