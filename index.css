@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-color: #ffffff;
+  --surface-color: rgba(255, 255, 255, 0.65);
+  --border-color: rgba(255, 255, 255, 0.5);
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B7280;
+  --accent-color: #7B73D4;
+  --accent-hover: #655CBB;
+  --highlight-color: #C1C9EB;
+  
+  --shadow-sm: 0 4px 12px rgba(123, 115, 212, 0.08);
+  --shadow-md: 0 10px 30px rgba(123, 115, 212, 0.12);
+  --shadow-lg: 0 20px 40px rgba(123, 115, 212, 0.2);
+  
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(circle at 75% 45%, rgba(215, 210, 255, 0.4) 0%, transparent 45%),
+    radial-gradient(circle at 20% 85%, rgba(220, 230, 255, 0.3) 0%, transparent 40%),
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 60px 60px, 60px 60px;
+  background-attachment: fixed;
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.5));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255,255,255,0.8);
+  pointer-events: none;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* Inputs */
+.input-field {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.7);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.input-field:focus {
+  border-color: var(--accent-color);
+  background: white;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(123, 115, 212, 0.1);
+}
+
+.input-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+
+/* Animations */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(2, 132, 199, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+}
