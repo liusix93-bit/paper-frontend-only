@@ -11,11 +11,12 @@ app = FastAPI(title="Paper Notion Agent API", version="2.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "https://mypapertool.site", "https://www.mypapertool.site", "https://paper-frontend-only-bice.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 os.makedirs("extracted_figs", exist_ok=True)
 app.mount("/extracted_figs", StaticFiles(directory="extracted_figs"), name="extracted_figs")
