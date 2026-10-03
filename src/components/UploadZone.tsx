@@ -151,7 +151,7 @@ const UploadZone = () => {
     if (isPushing) return;
     setIsPushing(true);
     
-    let targetsToPush = [];
+    let targetsToPush: any[] = [];
     if (notionSyncTarget === "all") {
       targetsToPush = results.map((res, index) => ({res, index})).filter(x => !pushedIndexes.has(x.index));
     } else {
@@ -404,7 +404,7 @@ const UploadZone = () => {
           </div>
         )}
         {results.map((res, index) => {
-          const isPushed = pushedIndexes.has(index);
+
           return (
             <div key={index} className="report-container" style={{ animation: 'fadeIn 0.5s ease', paddingTop: '40px', borderTop: '2px dashed var(--border-color)', width: '100%' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
