@@ -1,4 +1,0 @@
-gradio
-pymupdf
-openai
-requests
