@@ -183,11 +183,15 @@ def upload_image_for_notion(file_path):
         data = {"key": "6d207e02198a847aa98d0a2a901485a5"}
         with open(file_path, "rb") as f:
             files = {"source": f}
-            response = requests.post(url, data=data, files=files)
+            response = requests.post(url, data=data, files=files, timeout=8)
             if response.status_code == 200:
                 result = response.json()
                 if "image" in result and "url" in result["image"]:
                     return result["image"]["url"]
     except Exception as e:
-        print("Image upload failed:", e)
-    return None
+        print("Image upload failed, falling back to local URL:", e)
+    
+    # 终极备用方案：如果免费图床挂了，直接返回你自己后端的公网链接！
+    # 只要保证路径中的斜杠是正斜杠
+    safe_path = file_path.replace('\\', '/')
+    return f"https://paper-frontend-only-2.onrender.com/{safe_path}"
