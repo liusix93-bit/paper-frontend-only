@@ -20,9 +20,6 @@ app.add_middleware(
 os.makedirs("extracted_figs", exist_ok=True)
 app.mount("/extracted_figs", StaticFiles(directory="extracted_figs"), name="extracted_figs")
 
-os.makedirs("temp", exist_ok=True)
-app.mount("/temp", StaticFiles(directory="temp"), name="temp")
-
 @app.get("/health")
 def health_check():
     return {"status": "ok", "message": "Backend is running!"}
@@ -70,7 +67,6 @@ async def analyze_paper(file: UploadFile = File(...)):
         fig_names_to_find = [fig.get("Figure_Name") for fig in fig_analysis if fig.get("Figure_Name")]
         extracted_figs = utils.extract_figures_smart(file_path, fig_names_to_find)
         result_json["extracted_figs"] = extracted_figs
-        result_json["pdf_filename"] = file.filename
                     
         return JSONResponse(content={
             "status": "success", 
@@ -147,21 +143,6 @@ async def push_to_notion(payload: dict):
         ]
 
     children = []
-    
-    pdf_filename = payload.get("pdf_filename", "")
-    if pdf_filename:
-        import urllib.parse
-        encoded_name = urllib.parse.quote(pdf_filename)
-        pdf_url = f"https://paper-frontend-only-2.onrender.com/temp/{encoded_name}"
-        children.append({
-            "object": "block", 
-            "type": "file", 
-            "file": {
-                "type": "external", 
-                "external": {"url": pdf_url},
-                "name": pdf_filename
-            }
-        })
     
     mermaid = payload.get("Mermaid_Flowchart", "")
     if mermaid:
