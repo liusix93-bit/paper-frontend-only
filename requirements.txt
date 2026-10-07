@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+python-multipart
+gradio
+pymupdf
+openai
+requests
+python-dotenv

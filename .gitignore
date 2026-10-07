@@ -1,0 +1,23 @@
+﻿# secrets
+.env
+
+# caches / build
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.gradio/
+
+# copyrighted papers & extracted figures
+temp/
+extracted_figs/
+*.pdf
+
+# local scratch
+scratch/
+error.txt
+test.txt
+public_url.txt
+start_app.bat
+setup_notion.py
+find_auth.py

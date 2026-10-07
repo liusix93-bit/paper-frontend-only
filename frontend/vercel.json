@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://paper-frontend-only-2.onrender.com/api/:path*"
+    },
+    {
+      "source": "/extracted_figs/:path*",
+      "destination": "https://paper-frontend-only-2.onrender.com/extracted_figs/:path*"
+    }
+  ]
+}

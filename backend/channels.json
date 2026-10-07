@@ -1,0 +1,16 @@
+{
+  "channels": [
+    {
+      "id": "group_meeting",
+      "name": "组会文献精读库 (Agent自动创建)",
+      "description": "默认的公共文献汇报库",
+      "notion_database_id": "替换为实际ID"
+    },
+    {
+      "id": "private_library",
+      "name": "个人私有文献库",
+      "description": "仅自己可见的私有阅读记录",
+      "notion_database_id": ""
+    }
+  ]
+}
