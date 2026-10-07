@@ -273,12 +273,23 @@ const UploadZone = () => {
     results.forEach((res, index) => {
       if (res.Mermaid_Flowchart) {
         try {
-          mermaid.render(`mermaid-svg-${index}`, res.Mermaid_Flowchart).then((m) => {
-            const el = document.getElementById(`mermaid-container-${index}`);
-            if (el) el.innerHTML = m.svg;
-          });
+          mermaid.render(`mermaid-svg-${index}`, res.Mermaid_Flowchart)
+            .then((m) => {
+              const el = document.getElementById(`mermaid-container-${index}`);
+              if (el) el.innerHTML = m.svg;
+            })
+            .catch((e) => {
+              console.error("Mermaid render error:", e);
+              const el = document.getElementById(`mermaid-container-${index}`);
+              if (el) {
+                el.innerHTML = `<div style="text-align: left; background: #fff3f3; color: #d32f2f; padding: 12px; border-radius: 8px; font-size: 13px;">
+                  <strong>流程图渲染失败，原生代码如下：</strong>
+                  <pre style="margin-top: 8px; overflow-x: auto; white-space: pre-wrap;">${res.Mermaid_Flowchart.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                </div>`;
+              }
+            });
         } catch (e) {
-          console.error("Mermaid error:", e);
+          console.error("Mermaid sync error:", e);
         }
       }
     });
