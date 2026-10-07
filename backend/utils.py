@@ -75,7 +75,7 @@ def analyze_with_kimi(text):
         "Sec03_Methods": "核心实验设计与方法",
         "Figure_Analysis": [
             {
-                "Figure_Name": "原版图表名称 (【绝对不能翻译】，必须保持原文如 Figure 1)",
+                "Figure_Name": "原文图表编号 (必须精确提取原文的编号，如 Figure 1, Fig. 2a, 图1, 表1。严禁使用『图示』、『表格』等泛指词)",
                 "Core_Conclusion": "这张图证明了什么核心结论？",
                 "Key_Details": "用了什么关键实验手段/对比，看到了什么关键差异？"
             }
@@ -257,11 +257,11 @@ def extract_figures_smart(pdf_path, fig_names_to_find):
     extracted = []
 
     for fig_name in fig_names_to_find:
-        m = re.search(r'(?:图|Figure|Fig\.?|FIG\.?)\s*([A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?)', fig_name, re.IGNORECASE)
+        m = re.search(r'(?:图|表|Figure|Fig\.?|FIG\.?|Table|Tab\.?)\s*([A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?)', fig_name, re.IGNORECASE)
         if not m:
             continue
         fig_num = re.escape(m.group(1))
-        head = r'^(?:Figure|Fig\.?|FIG\.?|图)\s*' + fig_num
+        head = r'^(?:Figure|Fig\.?|FIG\.?|Table|Tab\.?|图|表)\s*' + fig_num
         # 严格图注："Fig. 3." / "Figure 3:" / "Fig. 3 Title"；排除正文里的 "Fig. 3 shows ..."
         strict = re.compile(head + r'\s*(?:[.:：|]|\s+[A-Z(\u4e00-\u9fff]|$)', re.IGNORECASE)
         loose = re.compile(head + r'(?:[^a-zA-Z0-9]|$)', re.IGNORECASE)
