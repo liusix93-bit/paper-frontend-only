@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
+﻿from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -294,77 +294,4 @@ async def chat_with_paper(payload: dict):
     except Exception as e:
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
-@app.post("/api/skills/extract")
-async def extract_skill(file: UploadFile = File(...)):
-    import utils
-    import traceback
-    import requests
-    import config
-    import json
-    
-    try:
-        os.makedirs("temp", exist_ok=True)
-        file_path = os.path.join("temp", file.filename)
-        with open(file_path, "wb") as f:
-            content = await file.read()
-            f.write(content)
-            
-        # 1. 提取全文 (复用原有的 utils.extract_text_from_pdf)
-        text = utils.extract_text_from_pdf(file_path)
-        
-        # 2. 使用大模型基于全文生成真实的 Skill Markdown
-        skill_markdown_content = utils.generate_skill_with_kimi(text, file.filename)
-        
-        import re
-        match = re.search(r"name:\s*(.+)", skill_markdown_content)
-        skill_name = match.group(1).strip() if match else f"skill-{file.filename.replace('.pdf', '')}"
-        
-        # 3. 推送到 Notion
-        url = "https://api.notion.com/v1/pages"
-        headers = {
-            "Authorization": f"Bearer {config.NOTION_API_TOKEN}",
-            "Content-Type": "application/json",
-            "Notion-Version": "2022-06-28"
-        }
-        
-        data = {
-            "parent": { "database_id": config.NOTION_DATABASE_ID },
-            "properties": {
-                "Name": { "title": [{"text": {"content": f"🛠️ Agent Skill: {skill_name}"}}] }
-            },
-            "children": [
-                {
-                    "object": "block",
-                    "type": "heading_2",
-                    "heading_2": {"rich_text": [{"text": {"content": "使用说明"}}]}
-                },
-                {
-                    "object": "block",
-                    "type": "paragraph",
-                    "paragraph": {"rich_text": [{"text": {"content": "请点击下方代码块右上角的“Copy”按钮，将其保存为本地的 SKILL.md 文件即可使用。"}}] }
-                },
-                {
-                    "object": "block",
-                    "type": "code",
-                    "code": {
-                        "rich_text": [{"text": {"content": skill_markdown_content}}],
-                        "language": "markdown"
-                    }
-                }
-            ]
-        }
-        
-        res = requests.post(url, headers=headers, json=data)
-        if res.status_code == 200:
-            notion_data = res.json()
-            page_url = notion_data.get("url", "")
-            return JSONResponse(content={"status": "success", "message": "Skill generated and pushed to Notion!", "url": page_url})
-        else:
-            return JSONResponse(content={"status": "error", "message": res.text}, status_code=500)
 
-    except Exception as e:
-        print("Extract Skill Error:", traceback.format_exc())
-        raise HTTPException(status_code=500, detail=str(e))
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

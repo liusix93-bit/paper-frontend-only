@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 
 const formatText = (text: string) => {
@@ -48,7 +48,7 @@ const ChatBox = ({ availableFiles, initialFilename, onClose }: { availableFiles:
     setLoading(true);
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const apiUrl = import.meta.env.PROD ? "" : "http://localhost:8000";
       const res = await fetch(`${apiUrl}/api/papers/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -177,7 +177,7 @@ const UploadZone = () => {
       formData.append("database_id", channel);
       
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        const apiUrl = import.meta.env.PROD ? "" : "http://localhost:8000";
         const response = await fetch(`${apiUrl}/api/papers/analyze`, {
           method: "POST",
           body: formData
@@ -230,7 +230,7 @@ const UploadZone = () => {
     let successCount = 0;
     for (const target of targetsToPush) {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        const apiUrl = import.meta.env.PROD ? "" : "http://localhost:8000";
         const payload = {
           ...target.res,
           reporter: reporter,
@@ -563,9 +563,9 @@ const UploadZone = () => {
                           {matchedFig ? (
                             <div style={{ marginBottom: '20px', textAlign: 'center', background: '#f9f9fb', padding: '16px', borderRadius: '8px' }}>
                               <img 
-                                src={`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/${matchedFig.path}`} 
+                                src={`${import.meta.env.PROD ? "" : "http://localhost:8000"}/${matchedFig.path}`} 
                                 alt={figName} 
-                                onClick={() => setZoomedImage(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/${matchedFig.path}`)}
+                                onClick={() => setZoomedImage(`${import.meta.env.PROD ? "" : "http://localhost:8000"}/${matchedFig.path}`)}
                                 style={{ maxWidth: '100%', maxHeight: '250px', objectFit: 'contain', borderRadius: '4px', cursor: 'zoom-in' }} 
                               />
                             </div>
