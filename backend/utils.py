@@ -238,12 +238,6 @@ def _locate_figure(page, cap):
         u = fitz.Rect(inside[0])
         for g in inside[1:]:
             u |= g
-        for b in page.get_text("blocks"):
-            r = fitz.Rect(b[:4])
-            # 严格限制：只把短文本(标签)并入图形，决不并入长段落
-            if b[6] == 0 and r.intersects(region) and r.intersects(u):
-                if len(b[4].strip()) < 100:
-                    u |= (r & region)
         region = u
     region = _trim_whitespace(page, region)
     return region, sc
@@ -257,11 +251,11 @@ def extract_figures_smart(pdf_path, fig_names_to_find):
     extracted = []
 
     for fig_name in fig_names_to_find:
-        m = re.search(r'(?:图|表|Figure|Fig\.?|FIG\.?|Table|Tab\.?)\s*([A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?)', fig_name, re.IGNORECASE)
+        m = re.search(r'(?:图|Figure|Fig\.?|FIG\.?)\s*([A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?)', fig_name, re.IGNORECASE)
         if not m:
             continue
         fig_num = re.escape(m.group(1))
-        head = r'^(?:Figure|Fig\.?|FIG\.?|Table|Tab\.?|图|表)\s*' + fig_num
+        head = r'^(?:Figure|Fig\.?|FIG\.?|图)\s*' + fig_num
         # 严格图注："Fig. 3." / "Figure 3:" / "Fig. 3 Title"；排除正文里的 "Fig. 3 shows ..."
         strict = re.compile(head + r'\s*(?:[.:：|]|\s+[A-Z(\u4e00-\u9fff]|$)', re.IGNORECASE)
         loose = re.compile(head + r'(?:[^a-zA-Z0-9]|$)', re.IGNORECASE)
