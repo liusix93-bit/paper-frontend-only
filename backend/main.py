@@ -155,8 +155,8 @@ async def push_to_notion(payload: dict, request: Request):
     mermaid = payload.get("Mermaid_Flowchart", "")
     if mermaid:
         children.extend([
-            {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"text": {"content": "📌 核心机制流程图 (Mermaid)"}}]}},
-            {"object": "block", "type": "code", "code": {"language": "mermaid", "rich_text": [{"text": {"content": mermaid}}]}}
+            {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"text": {"content": "📌 核心机制流程图 (Mermaid代码)"}}]}},
+            {"object": "block", "type": "code", "code": {"language": "plain text", "rich_text": [{"text": {"content": mermaid}}]}}
         ])
     
     sections_pre_figure = [
@@ -230,23 +230,7 @@ async def push_to_notion(payload: dict, request: Request):
         if content:
             children.extend(text_block(f"💡 {sec_title}", content))
 
-    # ------ 新增: PDF Embed 功能 ------
-    filename = payload.get("_filename", "")
-    # 使用 FastAPI 提供的当前服务器真实基础域名（例如 https://paper-notion-agent-1.onrender.com）
-    base_url = str(request.base_url).rstrip("/")
-    if "localhost" in base_url or "127.0.0.1" in base_url:
-        # 为了防止本地调试时 Notion API 报错导致整个推送失败，必须给一个虚拟外网域名
-        base_url = "https://paper-notion-agent-1.onrender.com"
-        
-    encoded_filename = urllib.parse.quote(filename) if filename else "document.pdf"
-    pdf_url = f"{base_url}/temp/{encoded_filename}"
-
-    children.extend([
-        {"object": "block", "type": "divider", "divider": {}},
-        {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"text": {"content": "📄 原文 PDF 预览"}}]}},
-        {"object": "block", "type": "pdf", "pdf": {"type": "external", "external": {"url": pdf_url}}}
-    ])
-    # --------------------------------
+    # 移除了 PDF 预览，因为 Render 免费实例会清空临时文件，且大体积 PDF 可能导致 Notion 卡死。
 
     children.extend([
         {"object": "block", "type": "divider", "divider": {}},
