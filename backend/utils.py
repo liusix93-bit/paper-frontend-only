@@ -69,19 +69,28 @@ def analyze_with_kimi(text):
         "CAS": "中科院分区 (如 1区, 请务必根据知识库估算，不要填 未知)",
         "IF": "影响因子 (如 15.3, 请务必根据知识库给出最新估算值，不要填 未知)",
         "Tags": ["标签1", "标签2"],
-        "Mermaid_Flowchart": "用 mermaid 语法写一段流程图总结整篇文章的核心逻辑。注意：流程图里的【节点内容文本】必须翻译成中文！为了防止语法报错，【节点文本必须用双引号严格包裹】，例如 A[\"组别(包含括号等特殊符号)\"]。mermaid代码中的【语法关键字】必须是纯英文。直接写代码，不要用 markdown包裹",
-        "Sec01_Summary": "一句话核心总结",
-        "Sec02_Motivation": "研究动机与填补的 Gap",
-        "Sec03_Methods": "核心实验设计与方法",
+        "Sec02_Summary": "02 一句话总结 (What problem, what approach, what result)",
+        "Sec03_Question": "03 研究问题 (Research Question: problem, why it matters, why existing fail)",
+        "Sec04_Background": "04 研究背景与发展路径 (Background & Development Path)",
+        "Sec05_PainPoints": "05 核心痛点 (Core Pain Points Identified by the Paper)",
+        "Sec06_Idea": "06 核心思想 (Core Idea: surface method, core insight)",
+        "Sec07_Method": "07 方法概览 (Method Overview)",
+        "Sec08_Modules": "08 核心模块拆解 (Core Module Breakdown)",
+        "Sec09_Formulas": "09 核心公式与符号 (Essential Formulas and Symbols)",
+        "Mermaid_Flowchart": "用 mermaid 语法写一段流程图总结整篇文章的核心逻辑。注意：流程图里的【节点内容文本】必须翻译成中文！【节点文本必须用双引号严格包裹】，例如 A[\"组别\"]。",
         "Figure_Analysis": [
             {
-                "Figure_Name": "原文图表编号 (必须精确提取原文的编号，如 Figure 1, Fig. 2a, 图1, 表1。严禁使用『图示』、『表格』等泛指词)",
+                "Figure_Name": "原文图表编号 (必须精确提取原文的编号，如 Figure 1, Fig. 2a。严禁使用『图示』、『表格』等泛指词)",
                 "Core_Conclusion": "这张图证明了什么核心结论？",
                 "Key_Details": "用了什么关键实验手段/对比，看到了什么关键差异？"
             }
         ],
-        "Sec04_Limitations": "局限性与缺陷",
-        "Sec05_Ideas": "对课题组的启发"
+        "Sec11_Interpretation": "11 结论的正确解读边界 (Correct Interpretation of the Conclusions)",
+        "Sec12_Limitations": "12 作者承认的局限性 (Limitations Explicitly Acknowledged)",
+        "Sec13_CriticalAnalysis": "13 批判性分析 (Critical Analysis: flaws, alternatives)",
+        "Sec14_Knowledge": "14 学到的知识 (Knowledge Learned: transferable concepts)",
+        "Sec15_Connections": "15 与已有知识的联系 (Connections to Existing Knowledge)",
+        "Sec16_Ideas": "16 研究启发 (Research Ideas: hypothesis, methods)"
     }
     
     以下是论文内容截取：

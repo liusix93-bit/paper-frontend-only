@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 
 const formatText = (text: string) => {
@@ -518,21 +518,22 @@ const UploadZone = () => {
                 </p>
               </div>
 
-              <div>
-                <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>摘要总结</h3>
-                <p style={{ lineHeight: 1.8, color: 'var(--text-primary)', whiteSpace: 'pre-line' }}>{formatText(res.Sec01_Summary)}</p>
-              </div>
-
-              <div className="grid-2-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
-                <div>
-                  <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>研究动机与痛点</h3>
-                  <p style={{ lineHeight: 1.8, whiteSpace: 'pre-line', color: 'var(--text-primary)' }}>{formatText(res.Sec02_Motivation)}</p>
+              {/* Paper Card Sections (Pre-Figure) */}
+              {[
+                { title: '02 一句话总结 (Summary)', content: res.Sec02_Summary || res.Sec01_Summary },
+                { title: '03 研究问题 (Research Question)', content: res.Sec03_Question },
+                { title: '04 研究背景 (Background)', content: res.Sec04_Background },
+                { title: '05 核心痛点 (Pain Points)', content: res.Sec05_PainPoints || res.Sec02_Motivation },
+                { title: '06 核心思想 (Core Idea)', content: res.Sec06_Idea },
+                { title: '07 方法概览 (Method)', content: res.Sec07_Method || res.Sec03_Methods },
+                { title: '08 模块拆解 (Modules)', content: res.Sec08_Modules },
+                { title: '09 核心公式 (Formulas)', content: res.Sec09_Formulas },
+              ].map((section, idx) => section.content ? (
+                <div key={`sec-a-${idx}`}>
+                  <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>{section.title}</h3>
+                  <p style={{ lineHeight: 1.8, color: 'var(--text-primary)', whiteSpace: 'pre-line' }}>{formatText(section.content)}</p>
                 </div>
-                <div>
-                  <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>核心方法论</h3>
-                  <p style={{ lineHeight: 1.8, whiteSpace: 'pre-line', color: 'var(--text-primary)' }}>{formatText(res.Sec03_Methods)}</p>
-                </div>
-              </div>
+              ) : null)}
 
               <div>
                 <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>机制流程图</h3>
@@ -595,16 +596,20 @@ const UploadZone = () => {
                 </div>
               )}
 
-              <div className="grid-2-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
-                <div>
-                  <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>局限性</h3>
-                  <p style={{ lineHeight: 1.8, whiteSpace: 'pre-line', color: 'var(--text-primary)' }}>{formatText(res.Sec04_Limitations)}</p>
+              {/* Paper Card Sections (Post-Figure) */}
+              {[
+                { title: '11 结论的正确解读边界 (Interpretation)', content: res.Sec11_Interpretation },
+                { title: '12 局限性 (Limitations)', content: res.Sec12_Limitations || res.Sec04_Limitations },
+                { title: '13 批判性分析 (Critical Analysis)', content: res.Sec13_CriticalAnalysis },
+                { title: '14 学到的知识 (Knowledge Learned)', content: res.Sec14_Knowledge },
+                { title: '15 与已有知识的联系 (Connections)', content: res.Sec15_Connections },
+                { title: '16 研究启发 (Research Ideas)', content: res.Sec16_Ideas || res.Sec05_Ideas },
+              ].map((section, idx) => section.content ? (
+                <div key={`sec-b-${idx}`}>
+                  <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>{section.title}</h3>
+                  <p style={{ lineHeight: 1.8, color: 'var(--text-primary)', whiteSpace: 'pre-line' }}>{formatText(section.content)}</p>
                 </div>
-                <div>
-                  <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>研究启发</h3>
-                  <p style={{ lineHeight: 1.8, whiteSpace: 'pre-line', color: 'var(--text-primary)' }}>{formatText(res.Sec05_Ideas)}</p>
-                </div>
-              </div>
+              ) : null)}
             </div>
           );
         })}
