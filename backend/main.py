@@ -251,8 +251,8 @@ async def push_to_notion(payload: dict, request: Request):
     children.extend([
         {"object": "block", "type": "divider", "divider": {}},
         {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"text": {"content": "📄 原文 PDF 预览"}}]}},
-        {"object": "block", "type": "pdf", "pdf": {"type": "external", "external": {"url": pdf_url}}}
-    ])
+        {"object": "block", "type": "pdf", "pdf": {"type": "external", "external": {"url": pdf_url}}},
+        {"object": "block", "type": "divider", "divider": {}},
         {"object": "block", "type": "callout", "callout": {
             "rich_text": [{"text": {"content": "👇 附件区：请直接将这篇论文的 PDF 源文件和同学汇报的 PPT 拖拽到下方的空白区域中！"}}],
             "icon": {"emoji": "📎"}
