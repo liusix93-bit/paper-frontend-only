@@ -214,9 +214,7 @@ const UploadZone = () => {
       targetsToPush = results.map((res, index) => ({res, index})).filter(x => !pushedIndexes.has(x.index));
     } else {
       const idx = parseInt(notionSyncTarget);
-      if (!pushedIndexes.has(idx)) {
-        targetsToPush = [{ res: results[idx], index: idx }];
-      }
+      targetsToPush = [{ res: results[idx], index: idx }];
     }
 
     if (targetsToPush.length === 0) {
@@ -474,14 +472,14 @@ const UploadZone = () => {
             >
               <option value="all">同步所有文件 (剩余 {results.length - pushedIndexes.size} 个)</option>
               {results.map((res, index) => (
-                <option key={index} value={index} disabled={pushedIndexes.has(index)}>
+                <option key={index} value={index}>
                   📄 {res.Title_ZH || res._filename} {pushedIndexes.has(index) ? ' (✅ Synced)' : ''}
                 </option>
               ))}
             </select>
             <button 
               className="btn" 
-              disabled={isPushing || (results.length - pushedIndexes.size === 0 && notionSyncTarget === 'all') || (notionSyncTarget !== 'all' && pushedIndexes.has(parseInt(notionSyncTarget)))} 
+              disabled={isPushing || (results.length - pushedIndexes.size === 0 && notionSyncTarget === 'all')} 
               onClick={handlePushTarget}
               style={{ padding: '10px 24px', borderRadius: '8px', whiteSpace: 'nowrap', fontWeight: 600, opacity: isPushing ? 0.7 : 1, cursor: isPushing ? 'wait' : 'pointer', background: 'var(--text-primary)', color: 'white', border: 'none' }}
             >
