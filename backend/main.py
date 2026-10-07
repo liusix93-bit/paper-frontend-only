@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -159,14 +159,19 @@ async def push_to_notion(payload: dict, request: Request):
             {"object": "block", "type": "code", "code": {"language": "mermaid", "rich_text": [{"text": {"content": mermaid}}]}}
         ])
     
-    children.extend(text_block("🔬 1. 研究背景与临床痛点", payload.get("Sec02_Motivation", "")))
-    children.extend(text_block("🧪 2. 核心方法与数据集", payload.get("Sec03_Methods", "")))
-    
-    summary = payload.get("Sec01_Summary", "")
-    children.extend([
-        {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"text": {"content": "📊 3. 关键结果与结论"}}]}},
-        {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"text": {"content": summary}}]}}
-    ])
+    sections_pre_figure = [
+        ("02 一句话总结", payload.get("Sec02_Summary") or payload.get("Sec01_Summary", "")),
+        ("03 研究问题", payload.get("Sec03_Question", "")),
+        ("04 研究背景与发展路径", payload.get("Sec04_Background", "")),
+        ("05 核心痛点", payload.get("Sec05_PainPoints") or payload.get("Sec02_Motivation", "")),
+        ("06 核心思想", payload.get("Sec06_Idea", "")),
+        ("07 方法概览", payload.get("Sec07_Method") or payload.get("Sec03_Methods", "")),
+        ("08 核心模块拆解", payload.get("Sec08_Modules", "")),
+        ("09 核心公式与符号", payload.get("Sec09_Formulas", "")),
+    ]
+    for sec_title, content in sections_pre_figure:
+        if content:
+            children.extend(text_block(f"🔬 {sec_title}", content))
     
     # 插入图表解析和原图
     fig_analysis = payload.get("Figure_Analysis", [])
@@ -213,7 +218,17 @@ async def push_to_notion(payload: dict, request: Request):
                 {"text": {"content": "🔬 实验细节： "}}, {"text": {"content": details}}
             ]}})
             
-    children.extend(text_block("💡 4. 局限性与研究启示", payload.get("Sec04_Limitations", "") + "\n\n启示: " + payload.get("Sec05_Ideas", "")))
+    sections_post_figure = [
+        ("11 结论的正确解读边界", payload.get("Sec11_Interpretation", "")),
+        ("12 作者承认的局限性", payload.get("Sec12_Limitations") or payload.get("Sec04_Limitations", "")),
+        ("13 批判性分析", payload.get("Sec13_CriticalAnalysis", "")),
+        ("14 学到的知识", payload.get("Sec14_Knowledge", "")),
+        ("15 与已有知识的联系", payload.get("Sec15_Connections", "")),
+        ("16 研究启发与Idea", payload.get("Sec16_Ideas") or payload.get("Sec05_Ideas", "")),
+    ]
+    for sec_title, content in sections_post_figure:
+        if content:
+            children.extend(text_block(f"💡 {sec_title}", content))
 
     # ------ 新增: PDF Embed 功能 ------
     filename = payload.get("_filename", "")
