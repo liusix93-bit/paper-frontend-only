@@ -230,10 +230,21 @@ async def push_to_notion(payload: dict, request: Request):
         if content:
             children.extend(text_block(f"💡 {sec_title}", content))
 
-    # 移除了 PDF 预览，因为 Render 免费实例会清空临时文件，且大体积 PDF 可能导致 Notion 卡死。
+    # ------ 恢复: PDF Embed 功能 ------
+    filename = payload.get("_filename", "")
+    # 使用 FastAPI 提供的当前服务器真实基础域名
+    base_url = str(request.base_url).rstrip("/")
+    if "localhost" in base_url or "127.0.0.1" in base_url:
+        base_url = "https://paper-notion-agent-1.onrender.com"
+        
+    encoded_filename = urllib.parse.quote(filename) if filename else "document.pdf"
+    pdf_url = f"{base_url}/temp/{encoded_filename}"
 
     children.extend([
         {"object": "block", "type": "divider", "divider": {}},
+        {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"text": {"content": "📄 原文 PDF 预览"}}]}},
+        {"object": "block", "type": "pdf", "pdf": {"type": "external", "external": {"url": pdf_url}}}
+    ])
         {"object": "block", "type": "callout", "callout": {
             "rich_text": [{"text": {"content": "👇 附件区：请直接将这篇论文的 PDF 源文件和同学汇报的 PPT 拖拽到下方的空白区域中！"}}],
             "icon": {"emoji": "📎"}
