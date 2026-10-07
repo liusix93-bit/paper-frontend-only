@@ -155,8 +155,16 @@ async def push_to_notion(payload: dict, request: Request):
     mermaid = payload.get("Mermaid_Flowchart", "")
     if mermaid:
         children.extend([
-            {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"text": {"content": "📌 核心机制流程图 (Mermaid代码)"}}]}},
-            {"object": "block", "type": "code", "code": {"language": "plain text", "rich_text": [{"text": {"content": mermaid}}]}}
+            {
+                "object": "block",
+                "type": "toggle",
+                "toggle": {
+                    "rich_text": [{"text": {"content": "📌 点击展开查看: 核心机制流程图 (Mermaid 原生渲染)"}}],
+                    "children": [
+                        {"object": "block", "type": "code", "code": {"language": "mermaid", "rich_text": [{"text": {"content": mermaid}}]}}
+                    ]
+                }
+            }
         ])
     
     sections_pre_figure = [
