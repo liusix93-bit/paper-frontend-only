@@ -114,8 +114,15 @@ def analyze_with_kimi(text):
         data = json.loads(json_str)
         if "Mermaid_Flowchart" in data:
             chart = str(data["Mermaid_Flowchart"]).strip()
+            import re
+            chart = re.sub(r'^```mermaid\n?', '', chart)
+            chart = re.sub(r'^```\n?', '', chart)
+            chart = re.sub(r'\n?```$', '', chart)
+            chart = chart.strip()
             if not chart.startswith(("graph", "flowchart")):
                 data["Mermaid_Flowchart"] = ""
+            else:
+                data["Mermaid_Flowchart"] = chart
         return data
     except Exception as e:
         print("JSON parse error:", e)
