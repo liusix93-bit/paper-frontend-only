@@ -114,7 +114,6 @@ def analyze_with_kimi(text):
         data = json.loads(json_str)
         if "Mermaid_Flowchart" in data:
             chart = str(data["Mermaid_Flowchart"]).strip()
-            import re
             chart = re.sub(r'^```mermaid\n?', '', chart)
             chart = re.sub(r'^```\n?', '', chart)
             chart = re.sub(r'\n?```$', '', chart)
