@@ -154,6 +154,10 @@ async def push_to_notion(payload: dict, request: Request):
     
     mermaid = payload.get("Mermaid_Flowchart", "")
     if mermaid:
+        import re
+        mermaid = re.sub(r'^```mermaid\n?', '', mermaid)
+        mermaid = re.sub(r'^```\n?', '', mermaid)
+        mermaid = re.sub(r'\n?```$', '', mermaid)
         children.extend([
             {
                 "object": "block",

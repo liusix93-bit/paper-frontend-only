@@ -271,25 +271,35 @@ const UploadZone = () => {
   useEffect(() => {
     mermaid.initialize({ startOnLoad: false, theme: 'default' });
     results.forEach((res, index) => {
-      if (res.Mermaid_Flowchart) {
+      let flowchartCode = res.Mermaid_Flowchart;
+      if (flowchartCode) {
+        // 清理可能由于大模型幻觉带入的 markdown 标记
+        if (flowchartCode.startsWith("```mermaid")) {
+          flowchartCode = flowchartCode.replace(/^```mermaid\n?/, "").replace(/\n?```$/, "");
+        } else if (flowchartCode.startsWith("```")) {
+          flowchartCode = flowchartCode.replace(/^```\n?/, "").replace(/\n?```$/, "");
+        }
+
+        const renderErrorBox = (err: any) => {
+          console.error("Mermaid render error:", err);
+          const el = document.getElementById(`mermaid-container-${index}`);
+          if (el) {
+            el.innerHTML = `<div style="text-align: left; background: #fff3f3; color: #d32f2f; padding: 12px; border-radius: 8px; font-size: 13px;">
+              <strong>流程图渲染失败，原生代码如下：</strong>
+              <pre style="margin-top: 8px; overflow-x: auto; white-space: pre-wrap;">${flowchartCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+            </div>`;
+          }
+        };
+
         try {
-          mermaid.render(`mermaid-svg-${index}`, res.Mermaid_Flowchart)
+          mermaid.render(`mermaid-svg-${index}`, flowchartCode)
             .then((m) => {
               const el = document.getElementById(`mermaid-container-${index}`);
               if (el) el.innerHTML = m.svg;
             })
-            .catch((e) => {
-              console.error("Mermaid render error:", e);
-              const el = document.getElementById(`mermaid-container-${index}`);
-              if (el) {
-                el.innerHTML = `<div style="text-align: left; background: #fff3f3; color: #d32f2f; padding: 12px; border-radius: 8px; font-size: 13px;">
-                  <strong>流程图渲染失败，原生代码如下：</strong>
-                  <pre style="margin-top: 8px; overflow-x: auto; white-space: pre-wrap;">${res.Mermaid_Flowchart.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
-                </div>`;
-              }
-            });
+            .catch(renderErrorBox);
         } catch (e) {
-          console.error("Mermaid sync error:", e);
+          renderErrorBox(e);
         }
       }
     });
